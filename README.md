@@ -7,17 +7,16 @@ pip install -r requirements.txt
 ```
 
 ## 2. Dataset Setup
-1.  Download the **Flickr8k** dataset (from Kaggle or other sources).
-2.  Extract the images into: `d:\Multimodal Retrieval System\data\Images\`
-3.  Place `captions.txt` into: `d:\Multimodal Retrieval System\data\`
+1.  Download the **Flickr30k** dataset.
+2.  Extract the images into: `d:\Multimodal Retrieval System\data\flickr30k_images\`
+3.  Place `results.csv` (or captions file) into: `d:\Multimodal Retrieval System\data\`
 
 Structure should look like:
-```
 data/
-├── Images/
+├── flickr30k_images/
 │   ├── 1000268201_693b08cb0e.jpg
 │   ├── ...
-└── captions.txt
+└── results.csv
 ```
 
 ## 3. Build the Index (One-Time Setup)

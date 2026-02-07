@@ -28,6 +28,7 @@ Since the dataset is not on GitHub, you have two options:
 ```python
 import os
 os.environ['KAGGLE_CONFIG_DIR'] = "/content"
+# This downloads the Flickr30k dataset
 !kaggle datasets download -d hsankesara/flickr-image-dataset
 !unzip -q flickr-image-dataset.zip -d data/
 # Rename folder to match code expectation if needed
