@@ -1,0 +1,13 @@
+# Datasets
+data/
+embeddings/
+
+# Python
+__pycache__/
+*.pyc
+
+# Environment variables
+.env
+
+# System
+.DS_Store

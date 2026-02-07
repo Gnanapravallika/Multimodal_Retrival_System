@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Multimodal Search</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container">
+        <header>
+            <h1>🔍 AI Multimodal Search</h1>
+            <p>Search images using text or find similar images.</p>
+        </header>
+
+        <div class="search-box">
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchTab('text')">Text Search</button>
+                <button class="tab-btn" onclick="switchTab('image')">Image Search</button>
+            </div>
+
+            <!-- Text Search Form -->
+            <div id="text-search" class="search-form active">
+                <input type="text" id="textInfo" placeholder="Enter description (e.g., 'a dog on grass')...">
+                <button onclick="searchText()">Search</button>
+            </div>
+
+            <!-- Image Search Form -->
+            <div id="image-search" class="search-form">
+                <input type="file" id="imageInput" accept="image/*">
+                <button onclick="searchImage()">Search Similar</button>
+            </div>
+        </div>
+
+        <div id="loading" class="hidden">Searching...</div>
+
+        <div id="results-area">
+            <!-- Results will appear here -->
+        </div>
+    </div>
+
+    <script src="/static/script.js"></script>
+    <script>
+        function switchTab(mode) {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.querySelectorAll('.search-form').forEach(f => f.classList.remove('active'));
+
+            if (mode === 'text') {
+                document.querySelector('.tabs button:nth-child(1)').classList.add('active');
+                document.getElementById('text-search').classList.add('active');
+            } else {
+                document.querySelector('.tabs button:nth-child(2)').classList.add('active');
+                document.getElementById('image-search').classList.add('active');
+            }
+        }
+
+        async function searchText() {
+            const query = document.getElementById('textInfo').value;
+            if (!query) return alert("Please enter text!");
+
+            showLoading(true);
+            try {
+                const response = await fetch('/api/search', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ query: query, k: 6 })
+                });
+                const data = await response.json();
+                displayResults(data.results);
+            } catch (e) {
+                alert("Error searching: " + e);
+            }
+            showLoading(false);
+        }
+
+        async function searchImage() {
+            const fileInput = document.getElementById('imageInput');
+            if (!fileInput.files[0]) return alert("Please select an image!");
+
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
+            formData.append('k', 6);
+
+            showLoading(true);
+            try {
+                const response = await fetch('/api/search', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+                displayResults(data.results);
+            } catch (e) {
+                alert("Error searching: " + e);
+            }
+            showLoading(false);
+        }
+
+        function displayResults(results) {
+            const container = document.getElementById('results-area');
+            container.innerHTML = "";
+            if (!results || results.length === 0) {
+                container.innerHTML = "<p>No results found.</p>";
+                return;
+            }
+
+            results.forEach(res => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `
+                    <img src="${res.url}" alt="${res.filename}">
+                    <div class="card-info">
+                        <span>Score: ${res.score.toFixed(3)}</span>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function showLoading(show) {
+            document.getElementById('loading').className = show ? "" : "hidden";
+        }
+    </script>
+</body>
+
+</html>
